@@ -13,35 +13,22 @@ import Persik from "./panels/Persik";
 
 const App = () => {
   const [activePanel, setActivePanel] = useState("home");
-  const [fetchedUser, setUser] = useState(null);
-  const [popout, setPopout] = useState(null);
 
   useEffect(() => {
     bridge.subscribe(({ detail: { type, data } }) => {
       if (type === "VKWebAppUpdateConfig") {
         const schemeAttribute = document.createAttribute("scheme");
-        schemeAttribute.value = data.scheme ? data.scheme : "client_light";
+        schemeAttribute.value = data.scheme || "client_light";
         document.body.attributes.setNamedItem(schemeAttribute);
       }
     });
-    async function fetchData() {
-      const user = await bridge.send("VKWebAppGetUserInfo");
-      setUser(user);
-      setPopout(null);
-    }
-    fetchData();
   }, []);
-
-  const go = (e) => {
-    setActivePanel(e.currentTarget.dataset.to);
-  };
 
   return (
     <AdaptivityProvider>
       <AppRoot>
-        <View activePanel={activePanel} popout={popout}>
-          <Home id="home" fetchedUser={fetchedUser} go={go} />
-          <Persik id="persik" go={go} />
+        <View activePanel={activePanel}>
+          <Home id="home" />
         </View>
       </AppRoot>
     </AdaptivityProvider>
